@@ -37,51 +37,51 @@ static int failed = 0;
 
 program :   block                                   { printf("%s\n", "program -> block"); }
         ;
-block   :   OBRA decls stmts CBRA                     { printf("%s\n", "block -> {decls stmts}"); }
+block   :   OBRA decls stmts CBRA                   { printf("%s\n", "block -> {decls stmts}"); }
         ;
 decls   :   decls decl                              { printf("%s\n", "decls -> decls decl"); }
         |   "\n"
         ;
 decl    :   type ID SEMICOLON                       { printf("%s\n", "decl -> type ID SEMICOLON"); }
         ;
-type    :   type OCUR NUM CCUR                        { printf("%s\n", "type -> type [NUM]"); }
+type    :   type OCUR NUM CCUR                      { printf("%s\n", "type -> type [NUM]"); }
         |   BASIC                                   { printf("%s\n", "type -> BASIC"); }
         ;
 stmts   :   stmts stmt                              { printf("%s\n", "stmts -> stmt"); }
         |   "\n"
         ;
-stmt    :   loc ASSIGN bool SEMICOLON                  { printf("%s\n", "stmt -> loc = bool SEMICOLON"); }
-        |   IF OPAR bool CPAR stmt                    { printf("%s\n", "stmt -> IF (bool)"); }
-        |   IF OPAR bool CPAR stmt ELSE stmt          { printf("%s\n", "stmt -> IF (bool) stmt ELSE stmt"); }
-        |   WHILE OPAR bool CPAR stmt                 { printf("%s\n", "stmt -> WHILE (bool) stmt"); }
-        |   DO stmt WHILE OPAR bool CPAR SEMICOLON    { printf("%s\n", "stmt -> DO stmt WHILE (bool) SEMICOLON"); }
+stmt    :   loc ASSIGN bool SEMICOLON               { printf("%s\n", "stmt -> loc = bool SEMICOLON"); }
+        |   IF OPAR bool CPAR stmt                  { printf("%s\n", "stmt -> IF (bool)"); }
+        |   IF OPAR bool CPAR stmt ELSE stmt        { printf("%s\n", "stmt -> IF (bool) stmt ELSE stmt"); }
+        |   WHILE OPAR bool CPAR stmt               { printf("%s\n", "stmt -> WHILE (bool) stmt"); }
+        |   DO stmt WHILE OPAR bool CPAR SEMICOLON  { printf("%s\n", "stmt -> DO stmt WHILE (bool) SEMICOLON"); }
         |   BREAK SEMICOLON                         { printf("%s\n", "stmt -> BREAK SEMICOLON"); }
         |   block                                   { printf("%s\n", "stmt -> block"); }
         ;
 loc     :   loc OCUR bool CCUR                        { printf("%s\n", "loc -> loc [bool]"); }
         |   ID                                      { printf("%s\n", "loc -> ID"); }
         ;
-bool    :   bool OR join                          { printf("%s\n", "bool -> bool || join"); }
+bool    :   bool OR join                            { printf("%s\n", "bool -> bool || join"); }
         |   join                                    { printf("%s\n", "bool -> join"); }
         ;
-join    :   join AND equality                      { printf("%s\n", "join -> equality"); }
+join    :   join AND equality                       { printf("%s\n", "join -> equality"); }
         |   equality                                { printf("%s\n", "join -> equality"); }
         ;
-equality:   equality EQ rel                       { printf("%s\n", "equality -> equality == rel"); }
-        |   equality NEQ rel                       { printf("%s\n", "equality -> equality != rel"); }
+equality:   equality EQ rel                         { printf("%s\n", "equality -> equality == rel"); }
+        |   equality NEQ rel                        { printf("%s\n", "equality -> equality != rel"); }
         |   rel                                     { printf("%s\n", "equality -> rel"); }
         ;
-rel     :   expr LT expr                           { printf("%s\n", "rel -> expr < expr"); }
-        |   expr LTE expr                          { printf("%s\n", "rel -> expr <= expr"); }
-        |   expr GTE expr                          { printf("%s\n", "rel -> expr >= expr"); }
-        |   expr GT expr                           { printf("%s\n", "rel -> expr > expr"); }
+rel     :   expr LT expr                            { printf("%s\n", "rel -> expr < expr"); }
+        |   expr LTE expr                           { printf("%s\n", "rel -> expr <= expr"); }
+        |   expr GTE expr                           { printf("%s\n", "rel -> expr >= expr"); }
+        |   expr GT expr                            { printf("%s\n", "rel -> expr > expr"); }
         |   expr                                    { printf("%s\n", "rel -> expr"); }
         ;
-expr    :   expr PLUS term                           { printf("%s\n", "expr -> expr + term"); }
-        |   expr MINUS term                           { printf("%s\n", "expr -> expr - term"); }
+expr    :   expr PLUS term                          { printf("%s\n", "expr -> expr + term"); }
+        |   expr MINUS term                         { printf("%s\n", "expr -> expr - term"); }
         |   term                                    { printf("%s\n", "expr -> term"); }
         ;
-term    :   term MULT unary                          { printf("%s\n", "term -> term * unary"); }
+term    :   term MULT unary                         { printf("%s\n", "term -> term * unary"); }
         |   term DIV unary                          { printf("%s\n", "term -> term / unary"); }
         |   unary                                   { printf("%s\n", "term -> unary"); }
         ;
@@ -89,7 +89,7 @@ unary   :   DIV unary                               { printf("%s\n", "unary -> !
         |   UNARY_MINUS unary                               { printf("%s\n", "unary -> - unary"); }
         |   factor                                  { printf("%s\n", "unary -> factor"); }
         ;
-factor  :   OPAR bool CPAR                            { printf("%s\n", "factor -> (bool)"); }
+factor  :   OPAR bool CPAR                          { printf("%s\n", "factor -> (bool)"); }
         |   loc                                     { printf("%s\n", "factor -> loc"); }
         |   NUM                                     { printf("%s\n", "factor -> NUM"); }
         |   REAL                                    { printf("%s\n", "factor -> REAL"); }
