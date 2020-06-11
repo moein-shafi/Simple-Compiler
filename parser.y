@@ -1,21 +1,8 @@
 %{
 #include <stdio.h>
 #include <math.h>
-#include <errno.h>
-#include <libgen.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-//#include <llvm-c/Core.h>
-//#include "astnode.h"
-//#include "codegen.h"
-
 extern int yylex(void);
-extern FILE *yyin;
-
 static void yyerror(const char *msg);
-static char *outfile;
-static int failed = 0;
 %}
 
 %token ID NUM BASIC TRUE FALSE REAL STRING SEMICOLON
@@ -28,8 +15,11 @@ static int failed = 0;
 %left AND
 %left EQ NEQ
 %left LT LTE GT GTE
-%left MINUS PLUS
+%left PLUS
 %left MULT DIV
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %start program
 
@@ -40,7 +30,7 @@ program :   block                                   { printf("%s\n", "program ->
 block   :   OBRA decls stmts CBRA                   { printf("%s\n", "block -> {decls stmts}"); }
         ;
 decls   :   decls decl                              { printf("%s\n", "decls -> decls decl"); }
-        |   "\n"
+        |   '\n'                                      { printf("%s\n", "decls -> EPSILON"); }
         ;
 decl    :   type ID SEMICOLON                       { printf("%s\n", "decl -> type ID SEMICOLON"); }
         ;
@@ -48,10 +38,10 @@ type    :   type OCUR NUM CCUR                      { printf("%s\n", "type -> ty
         |   BASIC                                   { printf("%s\n", "type -> BASIC"); }
         ;
 stmts   :   stmts stmt                              { printf("%s\n", "stmts -> stmt"); }
-        |   "\n"
+        |   '\n'
         ;
 stmt    :   loc ASSIGN bool SEMICOLON               { printf("%s\n", "stmt -> loc = bool SEMICOLON"); }
-        |   IF OPAR bool CPAR stmt                  { printf("%s\n", "stmt -> IF (bool)"); }
+        |   IF OPAR bool CPAR stmt                  %prec LOWER_THAN_ELSE { printf("%s\n", "stmt -> IF (bool)"); }
         |   IF OPAR bool CPAR stmt ELSE stmt        { printf("%s\n", "stmt -> IF (bool) stmt ELSE stmt"); }
         |   WHILE OPAR bool CPAR stmt               { printf("%s\n", "stmt -> WHILE (bool) stmt"); }
         |   DO stmt WHILE OPAR bool CPAR SEMICOLON  { printf("%s\n", "stmt -> DO stmt WHILE (bool) SEMICOLON"); }
@@ -78,7 +68,7 @@ rel     :   expr LT expr                            { printf("%s\n", "rel -> exp
         |   expr                                    { printf("%s\n", "rel -> expr"); }
         ;
 expr    :   expr PLUS term                          { printf("%s\n", "expr -> expr + term"); }
-        |   expr MINUS term                         { printf("%s\n", "expr -> expr - term"); }
+        |   expr UNARY_MINUS term                   { printf("%s\n", "expr -> expr - term"); }
         |   term                                    { printf("%s\n", "expr -> term"); }
         ;
 term    :   term MULT unary                         { printf("%s\n", "term -> term * unary"); }
@@ -99,31 +89,13 @@ factor  :   OPAR bool CPAR                          { printf("%s\n", "factor -> 
 
 %%
 
-#include "lex.yy.c"
-
-
 void yyerror(const char* str)
 {
-    printf("input error! %s", str);
+    printf("input error! %s\n", str);
 }
 
-
-int main(int argc, char* *argv)
+int main()
 {
-    char* progname;
-    progname = basename(argv[0]);
-    if (argc != 3)
-    {
-        printf("not this way!\n");
-        exit(EXIT_FAILURE);
-    }
-    yyin = fopen(argv[1], "r");
-
-    if (!yyin)
-    {
-        printf("open file failed!\n");
-        exit(EXIT_FAILURE);
-    }
-    outfile = argv[2];
-    return yyparse();
+    yyparse();
+    return 0;
 }
