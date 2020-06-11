@@ -1,27 +1,51 @@
 %{
 #include <stdio.h>
-#include <math.h>
 extern int yylex(void);
 static void yyerror(const char *msg);
 %}
 
-%token ID NUM BASIC TRUE FALSE REAL STRING SEMICOLON
-%token IF DO WHILE ELSE BREAK
-%token OPAR CPAR OBRA CBRA OCUR CCUR
+%token ID
+%token NUM
+%token BASIC
+%token TRUE
+%token FALSE
+%token REAL
+%token STRING
+%token SEMICOLON
+
+%token IF
+%token DO
+%token WHILE
+%token ELSE
+%token BREAK
+
+%token OPAR
+%token CPAR
+%token OBRA
+%token CBRA
+%token OCUR
+%token CCUR
 
 %right ASSIGN
-%right NOT UNARY_MINUS
+%right NOT
+%right MINUS
+
 %left OR
 %left AND
-%left EQ NEQ
-%left LT LTE GT GTE
+
+%left EQ
+%left NEQ
+%left LT
+%left LTE
+%left GT
+%left GTE
+
 %left PLUS
-%left MULT DIV
+%left MULT
+%left DIV
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
-
-%start program
 
 %%
 
@@ -30,7 +54,7 @@ program :   block                                   { printf("%s\n", "program ->
 block   :   OBRA decls stmts CBRA                   { printf("%s\n", "block -> {decls stmts}"); }
         ;
 decls   :   decls decl                              { printf("%s\n", "decls -> decls decl"); }
-        |   '\n'                                      { printf("%s\n", "decls -> EPSILON"); }
+        |   ""                                      { printf("%s\n", "decls -> EPSILON"); }
         ;
 decl    :   type ID SEMICOLON                       { printf("%s\n", "decl -> type ID SEMICOLON"); }
         ;
@@ -38,7 +62,7 @@ type    :   type OCUR NUM CCUR                      { printf("%s\n", "type -> ty
         |   BASIC                                   { printf("%s\n", "type -> BASIC"); }
         ;
 stmts   :   stmts stmt                              { printf("%s\n", "stmts -> stmt"); }
-        |   '\n'
+        |   ""
         ;
 stmt    :   loc ASSIGN bool SEMICOLON               { printf("%s\n", "stmt -> loc = bool SEMICOLON"); }
         |   IF OPAR bool CPAR stmt                  %prec LOWER_THAN_ELSE { printf("%s\n", "stmt -> IF (bool)"); }
@@ -48,7 +72,7 @@ stmt    :   loc ASSIGN bool SEMICOLON               { printf("%s\n", "stmt -> lo
         |   BREAK SEMICOLON                         { printf("%s\n", "stmt -> BREAK SEMICOLON"); }
         |   block                                   { printf("%s\n", "stmt -> block"); }
         ;
-loc     :   loc OCUR bool CCUR                        { printf("%s\n", "loc -> loc [bool]"); }
+loc     :   loc OCUR bool CCUR                      { printf("%s\n", "loc -> loc [bool]"); }
         |   ID                                      { printf("%s\n", "loc -> ID"); }
         ;
 bool    :   bool OR join                            { printf("%s\n", "bool -> bool || join"); }
@@ -68,7 +92,7 @@ rel     :   expr LT expr                            { printf("%s\n", "rel -> exp
         |   expr                                    { printf("%s\n", "rel -> expr"); }
         ;
 expr    :   expr PLUS term                          { printf("%s\n", "expr -> expr + term"); }
-        |   expr UNARY_MINUS term                   { printf("%s\n", "expr -> expr - term"); }
+        |   expr MINUS term                         { printf("%s\n", "expr -> expr - term"); }
         |   term                                    { printf("%s\n", "expr -> term"); }
         ;
 term    :   term MULT unary                         { printf("%s\n", "term -> term * unary"); }
@@ -76,7 +100,7 @@ term    :   term MULT unary                         { printf("%s\n", "term -> te
         |   unary                                   { printf("%s\n", "term -> unary"); }
         ;
 unary   :   DIV unary                               { printf("%s\n", "unary -> ! unary"); }
-        |   UNARY_MINUS unary                               { printf("%s\n", "unary -> - unary"); }
+        |   MINUS unary                               { printf("%s\n", "unary -> - unary"); }
         |   factor                                  { printf("%s\n", "unary -> factor"); }
         ;
 factor  :   OPAR bool CPAR                          { printf("%s\n", "factor -> (bool)"); }

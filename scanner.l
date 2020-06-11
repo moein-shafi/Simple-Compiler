@@ -1,6 +1,4 @@
 %{
-#include <stdlib.h>
-#include <string.h>
 #include "parser.tab.h"
 %}
 
@@ -27,7 +25,7 @@ BREAK "break"
 
 ASSIGN "="
 NOT "!"
-UNARY_MINUS "-"
+MINUS "-"
 OR "||"
 AND "&&"
 EQ "=="
@@ -48,6 +46,7 @@ OCUR "["
 CCUR "]"
 
 %option nounput
+%option noyywrap
 %option noinput
 
 %%
@@ -73,7 +72,7 @@ CCUR "]"
 {STRING}                            { printf("token found: <const, %s> \n", yytext); return(STRING); }
 
 {PLUS}                              { printf("token found: <%s> \n", yytext); return(PLUS); }
-{UNARY_MINUS}                       { printf("token found: <%s> \n", yytext); return(UNARY_MINUS); }
+{MINUS}                             { printf("token found: <%s> \n", yytext); return(MINUS); }
 {MULT}                              { printf("token found: <%s> \n", yytext); return(MULT); }
 {DIV}                               { printf("token found: <%s> \n", yytext); return(DIV); }
 {OR}                                { printf("token found: <%s> \n", yytext); return(OR); }
