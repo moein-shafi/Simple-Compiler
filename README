@@ -1,0 +1,8 @@
+Worked and tested in Linux.
+To run on a unix-based operating system do following:
+
+    flex project.l
+    bison -dy project.y
+    gcc y.tab.c -o project
+    ./project < test.a > test.txt
+

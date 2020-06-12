@@ -1,5 +1,5 @@
 %{
-#include "parser.tab.h"
+#include "y.tab.h"
 %}
 
 alpha [a-zA-Z]
@@ -14,13 +14,14 @@ NUM {digit}+
 TRUE "true"
 FALSE "false"
 REAL {digit}+\.({digit}+)
-STRING ["][^"]*["]
+STRING \"([^\\\"]|\\.)*\"
+CHAR \'([^\\\"]|\\.)*\'
 SEMICOLON ";"
 
 IF "if"
 DO "do"
 WHILE "while"
-ELSE "ELSE"
+ELSE "else"
 BREAK "break"
 
 ASSIGN "="
@@ -70,6 +71,7 @@ CCUR "]"
 {ID}                                { printf("token found: <id, \"%s\"> \n", yytext); return(ID); }
 
 {STRING}                            { printf("token found: <const, %s> \n", yytext); return(STRING); }
+{CHAR}                              { printf("token found: <const, %s> \n", yytext); return(CHAR); }
 
 {PLUS}                              { printf("token found: <%s> \n", yytext); return(PLUS); }
 {MINUS}                             { printf("token found: <%s> \n", yytext); return(MINUS); }

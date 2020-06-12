@@ -11,6 +11,7 @@ static void yyerror(const char *msg);
 %token FALSE
 %token REAL
 %token STRING
+%token CHAR
 %token SEMICOLON
 
 %token IF
@@ -54,15 +55,15 @@ program :   block                                   { printf("%s\n", "program ->
 block   :   OBRA decls stmts CBRA                   { printf("%s\n", "block -> {decls stmts}"); }
         ;
 decls   :   decls decl                              { printf("%s\n", "decls -> decls decl"); }
-        |   ""                                      { printf("%s\n", "decls -> EPSILON"); }
+        |                                           { printf("%s\n", "decls -> EPSILON"); }
         ;
 decl    :   type ID SEMICOLON                       { printf("%s\n", "decl -> type ID SEMICOLON"); }
         ;
 type    :   type OCUR NUM CCUR                      { printf("%s\n", "type -> type [NUM]"); }
         |   BASIC                                   { printf("%s\n", "type -> BASIC"); }
         ;
-stmts   :   stmts stmt                              { printf("%s\n", "stmts -> stmt"); }
-        |   ""
+stmts   :   stmts stmt                              { printf("%s\n", "stmts -> stmts stmt"); }
+        |                                           { printf("%s\n", "stmts -> EPSILON"); }
         ;
 stmt    :   loc ASSIGN bool SEMICOLON               { printf("%s\n", "stmt -> loc = bool SEMICOLON"); }
         |   IF OPAR bool CPAR stmt                  %prec LOWER_THAN_ELSE { printf("%s\n", "stmt -> IF (bool)"); }
@@ -78,7 +79,7 @@ loc     :   loc OCUR bool CCUR                      { printf("%s\n", "loc -> loc
 bool    :   bool OR join                            { printf("%s\n", "bool -> bool || join"); }
         |   join                                    { printf("%s\n", "bool -> join"); }
         ;
-join    :   join AND equality                       { printf("%s\n", "join -> equality"); }
+join    :   join AND equality                       { printf("%s\n", "join -> join AND equality"); }
         |   equality                                { printf("%s\n", "join -> equality"); }
         ;
 equality:   equality EQ rel                         { printf("%s\n", "equality -> equality == rel"); }
@@ -99,8 +100,8 @@ term    :   term MULT unary                         { printf("%s\n", "term -> te
         |   term DIV unary                          { printf("%s\n", "term -> term / unary"); }
         |   unary                                   { printf("%s\n", "term -> unary"); }
         ;
-unary   :   DIV unary                               { printf("%s\n", "unary -> ! unary"); }
-        |   MINUS unary                               { printf("%s\n", "unary -> - unary"); }
+unary   :   NOT unary                               { printf("%s\n", "unary -> ! unary"); }
+        |   MINUS unary                             { printf("%s\n", "unary -> - unary"); }
         |   factor                                  { printf("%s\n", "unary -> factor"); }
         ;
 factor  :   OPAR bool CPAR                          { printf("%s\n", "factor -> (bool)"); }
@@ -113,9 +114,11 @@ factor  :   OPAR bool CPAR                          { printf("%s\n", "factor -> 
 
 %%
 
+#include "lex.yy.c"
+
 void yyerror(const char* str)
 {
-    printf("input error! %s\n", str);
+    fprintf(stderr, "input error! %s\n", str);
 }
 
 int main()
